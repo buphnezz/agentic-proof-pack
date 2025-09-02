@@ -1,0 +1,42 @@
+name: Deploy (Helm)
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'K8s namespace'
+        default: 'demo'
+        required: true
+      host:
+        description: 'Ingress host (e.g., api.example.com)'
+        required: true
+
+jobs:
+  deploy:
+    if: ${{ secrets.KUBE_CONFIG != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with: { version: v3.14.4 }
+
+      - name: Prepare kubeconfig
+        run: |
+          echo "${KUBE_CONFIG}" > kubeconfig
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Helm upgrade --install
+        env:
+          KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        run: |
+          helm upgrade --install agentic ./deploy/helm/agentic-proof \
+            -n ${{ github.event.inputs.namespace }} --create-namespace \
+            --set image.repository=ghcr.io/${{ github.repository_owner }}/agentic-proof-pack \
+            --set image.tag=latest \
+            --set ingress.enabled=true \
+            --set ingress.hosts[0].host=${{ github.event.inputs.host }} \
+            --set env.ALLOWED_ORIGINS="https://your-vercel-app.vercel.app" \
+            --set secrets.AUDIT_SIGNING_KEY="${{ secrets.AUDIT_SIGNING_KEY }}" \
+            --set secrets.JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            --set secrets.API_KEYS="${{ secrets.API_KEYS }}"

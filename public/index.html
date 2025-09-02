@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Agentic Proof Pack</title>
+  <link rel="stylesheet" href="/public/styles.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Deterministic, Auditable RAG</h1>
+      <p>Schema-locked • Citations • Audit • Metrics • RBAC</p>
+      <div id="demoBanner" class="card banner" style="display:none;">
+        <b>Demo Mode:</b> uploads are isolated, small, and ephemeral. Rate-limited to keep it friendly.
+        <span id="ephemeralNote" class="pill">Ephemeral uploads are ON — files do not persist after the demo ends.</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <div class="col">
+          <label>API Key</label>
+          <input id="apiKey" type="text" placeholder="X-API-Key" />
+          <button class="ghost" onclick="whoami()">whoami</button>
+          <span id="whoamiOut" class="muted"></span>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <div class="col grow">
+          <label>Upload KB doc (.md/.txt/.pdf/.docx)</label>
+          <input id="kbFile" type="file" accept=".md,.txt,.pdf,.docx"/>
+        </div>
+        <div class="col">
+          <button onclick="uploadDoc()">Upload</button>
+          <button onclick="reindex()">Reindex</button>
+          <button onclick="listDocs()">List Docs</button>
+          <a href="/audit/ui" target="_blank" style="margin-left:8px">Audit UI</a>
+          <span id="kbStatus" class="muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <label>Question</label>
+      <textarea id="q" placeholder="Ask a grounded question…">What are the acceptance tests for the pilot?</textarea>
+      <div class="row">
+        <div class="col">
+          <label>Top-K</label>
+          <input id="k" type="number" min="1" max="8" value="3"/>
+        </div>
+        <div class="col">
+          <button id="btn" onclick="send()">Ask</button>
+          <span id="status" class="muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack results vertically to avoid horizontal scroll -->
+    <section class="stack">
+      <div class="card"><h3>Answer</h3><pre id="answer" class="block mono"></pre></div>
+      <div class="card">
+        <h3>Citations</h3>
+        <div id="citesList"></div>
+        <pre id="cites" class="block mono"></pre>
+        <h4>Peek</h4>
+        <pre id="citeView" class="block mono"></pre>
+      </div>
+      <div class="card"><h3>Metrics</h3><pre id="metrics" class="block mono"></pre></div>
+    </section>
+
+    <section class="card">
+      <h3>KB Docs</h3>
+      <div id="kbListContainer"></div>
+    </section>
+
+    <footer>
+      <a href="/metrics" target="_blank">/metrics</a> ·
+      <a href="/audit/logs" target="_blank">/audit/logs</a> ·
+      <a href="/audit/verify" target="_blank">/audit/verify</a>
+    </footer>
+  </div>
+  <script src="/public/app.js"></script>
+</body>
+</html>

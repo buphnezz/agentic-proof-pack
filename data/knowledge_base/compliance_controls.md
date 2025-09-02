@@ -1,0 +1,1 @@
+Auditability: every /ask writes a signed JSONL line. Rotate keys via AUDIT_PREV_KEYS. Verification endpoint /audit/verify?n=100 checks signatures. PII scrub removes emails and phone numbers. All access paths require API key or JWT when AUTH_REQUIRED=true.

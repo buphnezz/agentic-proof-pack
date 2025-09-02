@@ -213,4 +213,3 @@ Query → TF-IDF ∪ BM25 ∪ (optional) FAISS → rerank → **deterministic** 
 
 This repository is provided for interview/demo purposes.
 © 2025 Zachary Schumpert. All rights reserved.
-# agentic-proof-pack

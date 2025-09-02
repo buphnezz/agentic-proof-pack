@@ -1,0 +1,8 @@
+Q: What guarantees does the platform provide?
+A: Deterministic orchestration, typed I/O, schema validation, inline citations, and explicit insufficient-context fallback.
+
+Q: How do we measure performance?
+A: Prometheus metrics for latency histograms and grounded ratio; an offline eval harness produces an HTML report.
+
+Q: Is the system fast enough for live calls?
+A: For a small knowledge base the p95 latency should be under 3 seconds with grounded answers.

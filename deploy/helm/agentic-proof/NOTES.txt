@@ -1,0 +1,4 @@
+1) Set values: image.repository/tag, ingress.hosts, ALLOWED_ORIGINS, secrets.
+2) Install:  helm upgrade --install agentic ./deploy/helm/agentic-proof -n demo --create-namespace
+3) Check:    kubectl -n demo get pods,svc,ingress
+4) Visit:    https://api.example.com/health

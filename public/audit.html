@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Audit Viewer</title>
+  <link rel="stylesheet" href="/public/styles.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Signed Audit Verification</h1>
+      <p>Green = signature OK</p>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <div class="col">
+          <label>API Key</label>
+          <input id="apiKey" type="text" placeholder="X-API-Key"/>
+        </div>
+        <div class="col">
+          <label>Last N lines</label>
+          <input id="n" type="number" value="200" min="10" max="2000"/>
+          <button onclick="loadAudit()">Verify</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <table id="tbl" style="width:100%; border-collapse:collapse">
+        <thead>
+          <tr><th style="text-align:left">OK</th><th style="text-align:left">ts</th><th style="text-align:left">trace_id</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+  </div>
+
+<script>
+(function boot(){
+  const el = document.getElementById('apiKey');
+  const DEFAULT_KEY = 'demo-key';
+  if (el) {
+    // Prefill with demo-key unless the user already stored something.
+    const stored = (localStorage.apiKey && localStorage.apiKey.trim()) ? localStorage.apiKey : DEFAULT_KEY;
+    el.value = stored;
+    localStorage.apiKey = stored; // keep UI pages consistent
+    el.addEventListener('input', () => { localStorage.apiKey = el.value; });
+  }
+})();
+function hdrs(){
+  const k = document.getElementById('apiKey').value || localStorage.apiKey || '';
+  return k ? {'X-API-Key':k} : {};
+}
+
+async function loadAudit(){
+  const n = parseInt(document.getElementById('n').value || '200', 10);
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '<tr><td colspan="3">loading…</td></tr>';
+  try{
+    const r = await fetch('/audit/verify?n='+n, { headers: hdrs() });
+    if (r.status === 401) {
+      tbody.innerHTML = '<tr><td colspan="3">401 Unauthorized — add API key</td></tr>';
+      return;
+    }
+    const j = await r.json();
+    const rows = (j.results || []).map(row => {
+      const tr = document.createElement('tr');
+      const td0 = document.createElement('td'); td0.textContent = row.ok ? '✅' : '❌'; td0.style.color = row.ok ? '#77ff77' : '#ff7777';
+      const td1 = document.createElement('td'); td1.textContent = String(row.ts || '');
+      const td2 = document.createElement('td'); td2.textContent = String(row.trace_id || '');
+      tr.appendChild(td0); tr.appendChild(td1); tr.appendChild(td2);
+      return tr;
+    });
+    tbody.innerHTML = '';
+    rows.forEach(tr => tbody.appendChild(tr));
+  }catch(e){
+    tbody.innerHTML = '<tr><td colspan="3">error</td></tr>';
+  }
+}
+document.addEventListener('DOMContentLoaded', loadAudit);
+</script>
+</body>
+</html>

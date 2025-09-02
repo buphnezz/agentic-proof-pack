@@ -1,0 +1,59 @@
+{
+  "info": {
+    "name": "Agentic Proof Pack",
+    "_postman_id": "f0d2ab3d-1c9a-4e0a-9b9c-pppppppppppp",
+    "description": "Deterministic, auditable RAG — ready-to-run requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "xApiKey", "value": "" },
+    { "key": "jwt", "value": "" }
+  ],
+  "event": [{
+    "listen": "prerequest",
+    "script": {
+      "type": "text/javascript",
+      "exec": [
+        "const jwt = pm.collectionVariables.get('jwt') || pm.environment.get('jwt');",
+        "const xk  = pm.collectionVariables.get('xApiKey') || pm.environment.get('xApiKey');",
+        "if (jwt) pm.request.headers.add({key:'Authorization', value:`Bearer ${jwt}`});",
+        "if (xk)  pm.request.headers.add({key:'X-API-Key', value:xk});"
+      ]
+    }
+  }],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Whoami (auth)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/whoami" }
+    },
+    {
+      "name": "Ask",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/ask",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What are the acceptance tests for the pilot?\",\n  \"top_k\": 3\n}"
+        }
+      }
+    },
+    {
+      "name": "Audit Logs",
+      "request": { "method": "GET", "url": "{{baseUrl}}/audit/logs?n=50" }
+    },
+    {
+      "name": "Audit Verify",
+      "request": { "method": "GET", "url": "{{baseUrl}}/audit/verify?n=50" }
+    },
+    {
+      "name": "Metrics (Prometheus)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/metrics" }
+    }
+  ]
+}

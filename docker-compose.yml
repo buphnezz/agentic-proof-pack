@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_PORT=8000
+      - KB_DIR=/app/data/knowledge_base
+      - AUDIT_PATH=/app/data/audit/audit.jsonl
+    volumes:
+      - ./data:/app/data

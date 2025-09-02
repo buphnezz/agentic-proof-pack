@@ -1,0 +1,1 @@
+Acceptance tests: 1) Grounded ratio ≥ 0.8 on golden set; 2) p95 latency < 1200 ms; 3) All answers include ≥1 citation with doc_id and line ranges; 4) /audit/verify returns ok=true for latest 100 lines; 5) Injection attempts are marked insufficient_context=true; 6) RBAC: /whoami reflects API key or JWT identity.

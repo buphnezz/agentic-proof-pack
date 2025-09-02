@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Agentic Proof Pack API
+  version: 0.1.0
+paths:
+  /ask:
+    post:
+      summary: Ask a grounded question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskRequest'
+      responses:
+        '200':
+          description: Answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AskResponse'
+  /audit/logs:
+    get:
+      summary: Tail audit log
+      parameters:
+        - in: query
+          name: n
+          schema: { type: integer, default: 50 }
+      responses: { '200': { description: OK } }
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      responses: { '200': { description: OK } }
+  /health:
+    get:
+      summary: Liveness probe
+      responses: { '200': { description: OK } }
+components:
+  schemas:
+    Citation:
+      type: object
+      properties:
+        doc_id: { type: string }
+        start_line: { type: integer }
+        end_line: { type: integer }
+        snippet: { type: string }
+    Metrics:
+      type: object
+      properties:
+        latency_ms: { type: integer }
+        grounded_ratio: { type: number, format: float }
+        schema_repairs: { type: integer }
+    AskRequest:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string }
+        top_k: { type: integer, default: 3 }
+    AskResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        citations:
+          type: array
+          items: { $ref: '#/components/schemas/Citation' }
+        metrics: { $ref: '#/components/schemas/Metrics' }
+        insufficient_context: { type: boolean }
